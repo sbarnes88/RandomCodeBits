@@ -25,9 +25,11 @@ public:
 
 class LinkedList {
 public:
+    char chars[4096];
     object* value;
     LinkedList* next;
     LinkedList* prev;
+    LinkedList* last;
     
     LinkedList() {
         next = NULL;
@@ -58,7 +60,10 @@ public:
             nextValue->value = val;
             nextValue->prev = this;
             next = nextValue;
+            last = next;
         }else {
+            if(last != NULL)
+                next = last;
             LinkedList* tmp = new LinkedList();
             while(nextValue->next != NULL) {
                 nextValue = nextValue->next;
@@ -68,9 +73,10 @@ public:
             tmp->next = NULL;
             tmp->prev = nextValue;
             nextValue->next = tmp;
+            last = tmp;
         }
         
-        std::cout << "Added after " << iterations << " iterations." << std::endl;
+        //std::cout << "Added after " << iterations << " iterations." << std::endl;
     }
     
     void removeAll() {
@@ -79,15 +85,18 @@ public:
         while(lastNode->next != null) {
             lastNode = lastNode->next;
         }
-        
+        LinkedList* currentNode = lastNode;
         while(lastNode->prev != null) {
-            std::cout << lastNode->value->getHash() << std::endl;
+            //std::cout << lastNode->value->getHash() << std::endl;
             delete lastNode->value;
+            currentNode = lastNode;
             lastNode = lastNode->prev;
+            delete currentNode;
             count++;
         }
-        std::cout << lastNode->value->getHash() << std::endl;
+        //std::cout << lastNode->value->getHash() << std::endl;
         delete lastNode->value;
+        delete lastNode;
         count++;
         
         std::cout << "Deleted " << count << " objects." << std::endl;
@@ -99,7 +108,7 @@ std::list<object*> gc;
 class Test : public object {
 	public:
         Test() {
-            std::cout << getHash() << std::endl;
+            //std::cout << getHash() << std::endl;
         }
 		void Run() {
 			std::cout << "Hello World" << std::endl;
@@ -121,7 +130,7 @@ int main() {
     LinkedList* ll = new LinkedList();
     ll->value = t;
     
-    for(int x = 0; x < 5; x++) {
+    for(int x = 0; x < 1024*1024; x++) {
         ll->addToEnd(new Test());
     }
     
